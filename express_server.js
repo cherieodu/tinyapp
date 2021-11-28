@@ -12,6 +12,17 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const generateRandomString = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let string = '';
+
+  while (string.length < 6) {
+    string += chars[Math.floor(Math.random() * chars.length)];
+  }
+
+  return string;
+}
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -39,8 +50,9 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  let shortURL = generateRandomString();
+  urlDatabase[shortURL] = req.body["longURL"];
+  res.redirect(`/urls/:${shortURL}`);
 });
 
 app.listen(PORT, () => {
