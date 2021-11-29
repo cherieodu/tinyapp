@@ -90,6 +90,10 @@ app.get("/register", (req, res) => {
   res.render("registration");
 });
 
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body["longURL"];
