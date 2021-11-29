@@ -45,7 +45,9 @@ app.get("/urls", (req, res) => {
     username: '',
     urls: urlDatabase
   };
-  templateVars = assignCookieUsername(templateVars, req);
+
+  templateVars = addUserToTemplateVars(templateVars, req);
+  //templateVars = assignCookieUsername(templateVars, req);
   res.render("urls_index", templateVars);
 });
 
@@ -54,14 +56,18 @@ app.get("/urls/new", (req, res) => {
     username: '',
     urls: urlDatabase
   };
-  templateVars = assignCookieUsername(templateVars, req);
+
+  templateVars = addUserToTemplateVars(templateVars, req);
+  //templateVars = assignCookieUsername(templateVars, req);
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
   let shortURL = (req.params.shortURL).substring(1);
   let templateVars = { shortURL: shortURL, longURL: urlDatabase[shortURL], username: '' };
-  templateVars = assignCookieUsername(templateVars, req);
+
+  templateVars = addUserToTemplateVars(templateVars, req);
+  //templateVars = assignCookieUsername(templateVars, req);
   res.render("urls_show", templateVars);
 });
 
@@ -117,7 +123,6 @@ app.post("/register", (req, res) => {
 
   let id = user.id;
   users[id] = user;
-  console.log(users);
   res.cookie('user_id', user.id);
   res.redirect('/urls');
 });
@@ -131,6 +136,14 @@ const assignCookieUsername = (template, req) => {
   if (req.cookies["username"]) {
     template.username = req.cookies["username"];
   }
-
   return template;
 };
+
+const addUserToTemplateVars = (template, req) => {
+  for (let userKey in users) {
+    if (userKey === req.cookies["user_id"]) {
+      template.user = users[userKey];
+    }
+  } return template;
+};
+
