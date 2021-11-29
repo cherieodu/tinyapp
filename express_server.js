@@ -15,7 +15,13 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-const users = {};
+const users = {
+  "userRandomID": {
+    id: "dfdfdf", 
+    email: "lolo@lol.com", 
+    password: "purple-monkey-dinosaur"
+  },
+};
 
 const generateRandomString = () => {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -115,16 +121,30 @@ app.post("/logout", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  const user = {
-    id: generateRandomString(),
-    email: req.body.email,
-    password: req.body.password
-  };
+  const id = generateRandomString();
+  const email = req.body.email;
+  const password = req.body.password;
+  let emailCheck = false;
 
-  let id = user.id;
-  users[id] = user;
-  res.cookie('user_id', user.id);
-  res.redirect('/urls');
+  for (let userKey in users) {
+    if (users[userKey]['email'] === email) {
+      emailCheck = true;
+    }
+  }
+
+  //The signup form already has 'required' attributes for the email and password but this is just in case.
+  if ((email && password !== '') && emailCheck === false) {
+    const user = {
+      id,
+      email,
+      password
+    };
+  
+    let ID = user.id;
+    users[ID] = user;
+    res.cookie('user_id', ID);
+    res.redirect('/urls');
+  } res.status(404).send("That email is already in use!");
 });
 
 
