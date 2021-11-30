@@ -15,13 +15,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-const users = {
-  "userRandomID": {
-    id: "dfdfdf", 
-    email: "lolo@lol.com", 
-    password: "purple-monkey-dinosaur"
-  },
-};
+const users = {};
 
 const generateRandomString = () => {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -48,32 +42,27 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let templateVars = {
-    username: '',
     urls: urlDatabase
   };
 
   templateVars = addUserToTemplateVars(templateVars, req);
-  //templateVars = assignCookieUsername(templateVars, req);
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
   let templateVars = {
-    username: '',
     urls: urlDatabase
   };
 
   templateVars = addUserToTemplateVars(templateVars, req);
-  //templateVars = assignCookieUsername(templateVars, req);
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
   let shortURL = (req.params.shortURL).substring(1);
-  let templateVars = { shortURL: shortURL, longURL: urlDatabase[shortURL], username: '' };
+  let templateVars = { shortURL: shortURL, longURL: urlDatabase[shortURL]};
 
   templateVars = addUserToTemplateVars(templateVars, req);
-  //templateVars = assignCookieUsername(templateVars, req);
   res.render("urls_show", templateVars);
 });
 
@@ -122,9 +111,11 @@ app.post("/login", (req, res) => {
     if ((users[userKey]['email'] === email) && (users[userKey]['password'] === password)) {
       res.cookie('user_id', userKey);
       res.redirect('/urls');
+      return;
     }
   }
   res.status(403).send("Invalid login credentials.");
+  return;
 });
 
 app.post("/logout", (req, res) => {
@@ -156,6 +147,7 @@ app.post("/register", (req, res) => {
     users[ID] = user;
     res.cookie('user_id', ID);
     res.redirect('/urls');
+    return;
   } res.status(404).send("That email is already in use!");
 });
 
@@ -163,13 +155,6 @@ app.post("/register", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-const assignCookieUsername = (template, req) => {
-  if (req.cookies["username"]) {
-    template.username = req.cookies["username"];
-  }
-  return template;
-};
 
 const addUserToTemplateVars = (template, req) => {
   for (let userKey in users) {
