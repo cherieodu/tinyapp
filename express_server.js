@@ -115,8 +115,16 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
-  res.redirect('/urls');
+  const email = req.body.email;
+  const password = req.body.password;
+
+  for (let userKey in users) {
+    if ((users[userKey]['email'] === email) && (users[userKey]['password'] === password)) {
+      res.cookie('user_id', userKey);
+      res.redirect('/urls');
+    }
+  }
+  res.status(403).send("Invalid login credentials.");
 });
 
 app.post("/logout", (req, res) => {
