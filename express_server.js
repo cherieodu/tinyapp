@@ -110,8 +110,8 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
+  const email = req.body['login-email'];
+  const password = req.body['login-password'];
 
   for (let userKey in users) {
     if ((users[userKey]['email'] === email) && (users[userKey]['password'] === password)) {
