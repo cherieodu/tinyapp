@@ -69,6 +69,8 @@ app.get("/urls/:shortURL", (req, res) => {
   
 
   templateVars = addUserToTemplateVars(templateVars, req);
+  urlsArray = urlsForUser(req.cookies['user_id']);
+  templateVars.urls = urlsArray;
   res.render("urls_show", templateVars);
 });
 
@@ -170,3 +172,16 @@ const addUserToTemplateVars = (template, req) => {
   } return template;
 };
 
+const urlsForUser = (id) => {
+  //send an array of the shortUrls belonging to the signed in user
+  const urls = [];
+
+  if (id !== undefined) {
+    for (let shorturl in urlDatabase) {
+      if (urlDatabase[shorturl]['userID'] === id) {
+        urls.push(shorturl);
+      }
+    }
+  } return urls;
+  
+}
