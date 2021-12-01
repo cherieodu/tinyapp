@@ -10,10 +10,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(cookieParser());
 
-const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
+const urlDatabase = {};
 
 const users = {};
 
@@ -50,17 +47,26 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = {
-    urls: urlDatabase
-  };
 
-  templateVars = addUserToTemplateVars(templateVars, req);
-  res.render("urls_new", templateVars);
+  if (req.cookies['user_id']) {
+    let templateVars = {
+      urls: urlDatabase
+    };
+  
+    templateVars = addUserToTemplateVars(templateVars, req);
+    res.render("urls_new", templateVars);
+    return;
+  }
+
+  res.redirect('/login');
+
+  
 });
 
 app.get("/urls/:shortURL", (req, res) => {
   let shortURL = (req.params.shortURL).substring(1);
-  let templateVars = { shortURL: shortURL, longURL: urlDatabase[shortURL]};
+  let templateVars = { shortURL: shortURL, longURL: urlDatabase[shortURL]['longURL']};
+  
 
   templateVars = addUserToTemplateVars(templateVars, req);
   res.render("urls_show", templateVars);
@@ -71,7 +77,7 @@ app.get("/u/:shortURL", (req, res) => {
   if (shortUrl[0] === ':') {
     shortUrl = shortUrl.substring(1);
   }
-  const longURL = urlDatabase[shortUrl];
+  const longURL = urlDatabase[shortUrl]['longURL'];
   res.redirect(longURL);
 });
 
@@ -85,7 +91,7 @@ app.get("/login", (req, res) => {
 
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body["longURL"];
+  urlDatabase[shortURL] = {longURL: req.body["longURL"], userID: req.cookies['user_id']};
   res.redirect(`/urls/:${shortURL}`);
 });
 
@@ -94,7 +100,7 @@ app.post("/urls/:id", (req, res) => {
   if (shortUrl[0] === ':') {
     shortUrl = shortUrl.substring(1);
   }
-  urlDatabase[shortUrl] = req.body["longURL"];
+  urlDatabase[shortUrl] = {longURL: req.body["longURL"], userID: req.cookies['user_id']};
   res.redirect('/urls');
 });
 
