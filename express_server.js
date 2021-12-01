@@ -102,12 +102,23 @@ app.post("/urls/:id", (req, res) => {
   if (shortUrl[0] === ':') {
     shortUrl = shortUrl.substring(1);
   }
-  urlDatabase[shortUrl] = {longURL: req.body["longURL"], userID: req.cookies['user_id']};
+
+  const urls = urlsForUser(req.cookies['user_id']);
+  
+  if (urls.includes(shortUrl) === true) {
+    urlDatabase[shortUrl] = {longURL: req.body["longURL"], userID: req.cookies['user_id']};
+  }
   res.redirect('/urls');
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
+  const urls = urlsForUser(req.cookies['user_id']);
+  const shorturl = req.params.shortURL;
+
+  if (urls.includes(shorturl) === true) {
+    delete urlDatabase[req.params.shortURL];
+  }
+  
   res.redirect('/urls');
 });
 
