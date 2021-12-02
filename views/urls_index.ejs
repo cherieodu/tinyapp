@@ -29,7 +29,7 @@
       <br>
       <h3><center>My URLs</center></h3>
       <br>
-      <table class="table">
+      <table class="table table-striped table-sm">
         <thead>
           <tr>
             <th scope="col">Short URL</th>
@@ -44,7 +44,7 @@
             <tr>
               <td><%= url %></td>
               <td><%= urls[url]['longURL'] %></td>
-              <td><form action="/urls/:<%= url %>"><button type="submit" class="btn btn-light" >Edit</button></form></td>
+              <td><form action="/urls/:<%= url %>"><button type="submit" class="btn btn-secondary" >Edit</button></form></td>
               <td><form method="POST" action="/urls/<%= url %>/delete"><button type="submit" class="btn btn-danger" >Delete</button></form></td>
             </tr>
           <% } } %>
