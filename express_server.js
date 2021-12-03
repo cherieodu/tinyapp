@@ -2,6 +2,8 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
+const getUserByEmail = require('./helpers');
+
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -18,19 +20,8 @@ const urlDatabase = {};
 
 const users = {};
 
-const generateRandomString = () => {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let string = '';
-
-  while (string.length < 6) {
-    string += chars[Math.floor(Math.random() * chars.length)];
-  }
-
-  return string;
-};
-
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.redirect('/urls')
 });
 
 app.get("/urls.json", (req, res) => {
@@ -130,12 +121,12 @@ app.post("/login", (req, res) => {
   const email = req.body['login-email'];
   const password = req.body['login-password'];
 
-  for (let userKey in users) {
-    if ((users[userKey]['email'] === email) && (bcrypt.compareSync(password, users[userKey]['password']) === true)) {
-      req.session.user_id = userKey;
-      res.redirect('/urls');
-      return;
-    }
+  let user = getUserByEmail(email, users);
+  
+  if ((user !== undefined) && (bcrypt.compareSync(password, user['password']) === true)) {
+    req.session.user_id = user['id'];
+    res.redirect('/urls');
+    return;
   }
   res.status(403).send("Invalid login credentials.");
   return;
@@ -150,16 +141,11 @@ app.post("/register", (req, res) => {
   const id = generateRandomString();
   const email = req.body.email;
   const password = bcrypt.hashSync(req.body.password, 10);
-  let emailCheck = false;
 
-  for (let userKey in users) {
-    if (users[userKey]['email'] === email) {
-      emailCheck = true;
-    }
-  }
+  let user = getUserByEmail(email, users);
 
   //The signup form already has 'required' attributes for the email and password but this is just in case.
-  if ((email && password !== '') && emailCheck === false) {
+  if ((email && password !== '') && user === undefined) {
     const user = {
       id,
       email,
@@ -178,6 +164,18 @@ app.post("/register", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+//functions
+const generateRandomString = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let string = '';
+
+  while (string.length < 6) {
+    string += chars[Math.floor(Math.random() * chars.length)];
+  }
+
+  return string;
+};
 
 const addUserToTemplateVars = (template, req) => {
   for (let userKey in users) {
@@ -199,4 +197,4 @@ const urlsForUser = (id) => {
     }
   } return urls;
   
-}
+};
