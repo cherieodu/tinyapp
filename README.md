@@ -7,27 +7,27 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 Landing page
 
-!["Landing Page"](../TinyApp-photos/not-logged-in.jpg)
+!["Landing Page"](https://github.com/cherieodu/tinyapp/blob/master/TinyApp-photos/not-logged-in.jpg?raw=true)<br/><br/>
 
-Sign Up / Log In
+Sign-Up / Log-In
 
-!["Registeration"](../TinyApp-photos/sign-up.jpg)
+!["Sign-Up / Log-In"](https://github.com/cherieodu/tinyapp/blob/master/TinyApp-photos/sign-up.jpg?raw=true)<br/><br/>
 
 Logged in but no TinyURLs created
 
-!["Registeration"](../TinyApp-photos/logged-in-no-urls.jpg)
+!["Logged in but no TinyURLs created"](https://github.com/cherieodu/tinyapp/blob/master/TinyApp-photos/logged-in-no-urls.jpg?raw=true)<br/><br/>
 
 Create TinyURL
 
-!["Registeration"](../TinyApp-photos/create-tinyurl.jpg)
+!["Create TinyURL"](https://github.com/cherieodu/tinyapp/blob/master/TinyApp-photos/create-tinyurl.jpg?raw=true)<br/><br/>
 
 Created TinyURL / Edit / Analytics
 
-!["Registeration"](../TinyApp-photos/created-tinyurl-edit.jpg)
+!["Created TinyURL / Edit / Analytics"](https://github.com/cherieodu/tinyapp/blob/master/TinyApp-photos/created-tinyurl-edit.JPG?raw=true)<br/><br/>
 
 URLs List 
 
-!["Registeration"](../TinyApp-photos/urls-list.jpg)
+!["URLs List"](https://github.com/cherieodu/tinyapp/blob/master/TinyApp-photos/urls-list.jpg?raw=true)
 <br/>
 <br/>
 
@@ -36,7 +36,7 @@ URLs List
 - Node.js
 - Express
 - EJS
-- bcrypt
+- bcryptjs
 - body-parser
 - cookie-session
 <br/>
