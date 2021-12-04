@@ -25,7 +25,7 @@
   <%- include('partials/_header') %>
   <% try { %>
   <% if (user) { %>
-  <% if (Object.entries(urls).length !== 0) { %>
+  <% if (hasUrls === true) { %>
     <main style="margin: 1em;">
       <br>
       <h3><center>My URLs</center></h3>
