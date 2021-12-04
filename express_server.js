@@ -1,3 +1,5 @@
+//Requires /Sets /Uses
+
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const bodyParser = require("body-parser");
@@ -5,7 +7,7 @@ const cookieSession = require('cookie-session');
 const getUserByEmail = require('./helpers');
 
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = 8080;
 
 app.set("view engine", "ejs");
 
@@ -16,10 +18,18 @@ app.use(cookieSession({
   keys: ['key1', 'key2']
 }));
 
+
+//Databases
 const urlDatabase = {};
 
 const users = {};
 
+const visitCountTracker = {};
+
+const uniqueVisitTracker = {};
+
+
+//Gets
 app.get("/", (req, res) => {
   res.redirect('/urls')
 });
@@ -59,13 +69,17 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  let shortURL = (req.params.shortURL).substring(1);
-  let templateVars = { shortURL: shortURL, longURL: urlDatabase[shortURL]['longURL']};
+  const shortURL = (req.params.shortURL).substring(1);
+  const longURL = urlDatabase[shortURL]['longURL'];
+  let templateVars = { shortURL, longURL};
   
 
   templateVars = addUserToTemplateVars(templateVars, req);
   urlsArray = urlsForUser(req.session.user_id);
   templateVars.urls = urlsArray;
+
+  visitCountTracker[shortURL] === undefined ? templateVars.visitCount = 0 : templateVars.visitCount = visitCountTracker[shortURL];
+  uniqueVisitTracker[longURL] === undefined ? templateVars.uniqueVisitCount = 0 : templateVars.uniqueVisitCount = uniqueVisitTracker[longURL].length;
   res.render("urls_show", templateVars);
 });
 
@@ -75,6 +89,8 @@ app.get("/u/:shortURL", (req, res) => {
     shortUrl = shortUrl.substring(1);
   }
   const longURL = urlDatabase[shortUrl]['longURL'];
+
+  visitCountTracker[shortUrl] ? visitCountTracker[shortUrl] += 1 : visitCountTracker[shortUrl] = 1;  
   res.redirect(longURL);
 });
 
@@ -86,9 +102,22 @@ app.get("/login", (req, res) => {
   res.render("login");
 });
 
+
+//Posts
+
 app.post("/urls", (req, res) => {
-  let shortURL = generateRandomString();
-  urlDatabase[shortURL] = {longURL: req.body["longURL"], userID: req.session.user_id};
+  const shortURL = generateRandomString();
+  const longURL = req.body["longURL"];
+  urlDatabase[shortURL] = {longURL, userID: req.session.user_id};
+
+  if (uniqueVisitTracker[longURL]) {
+    if (uniqueVisitTracker[longURL].includes(req.session.user_id) === false) {
+      uniqueVisitTracker[longURL].push(req.session.user_id);
+    }
+  } else {
+    uniqueVisitTracker[longURL] = [];
+    uniqueVisitTracker[longURL].push(req.session.user_id);
+  }
   res.redirect(`/urls/:${shortURL}`);
 });
 
@@ -165,7 +194,7 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-//functions
+//Functions
 const generateRandomString = () => {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let string = '';
@@ -186,7 +215,7 @@ const addUserToTemplateVars = (template, req) => {
 };
 
 const urlsForUser = (id) => {
-  //send an array of the shortUrls belonging to the signed in user
+  //send an array of the shortUrls belonging to the signed in user.
   const urls = [];
 
   if (id !== undefined) {
