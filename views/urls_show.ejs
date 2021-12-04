@@ -16,7 +16,7 @@
       top: 50%;
       left: 50%;
       width: 40em;
-      height: 18em;
+      height: 22em;
       background-color: #01202405;
       box-shadow: 3px 3px 8px 1px #969696;
       border-radius: 25px;
@@ -54,7 +54,14 @@
                 <div class="box-in">
                   <div class="center">
                     <h4>TinyURL for: <a href="<%= longURL %>"><%= longURL %></a></h4>
-                    <p>Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a></p>
+                    <h6>Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a></h6>
+                    <br>
+                    <center>
+                      <div style ='background-color: #28a745; color: white; border-radius: 10px; width: 200px'>
+                        Total Visit Count = <%= visitCount %><br />Unique URL Visitors = <%= uniqueVisitCount %>
+                      </div>
+                    </center>
+                    <br>
                     <br>
                     <h5>Edit</h5>
                     <form class="form-inline" method="POST" action="/urls/<%=shortURL%>">
