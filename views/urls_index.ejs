@@ -24,7 +24,8 @@
 <body>
   <%- include('partials/_header') %>
   <% try { %>
-  <% if (user) {%>
+  <% if (user) { %>
+  <% if (Object.entries(urls).length !== 0) { %>
     <main style="margin: 1em;">
       <br>
       <h3><center>My URLs</center></h3>
@@ -50,11 +51,14 @@
           <% } } %>
         </tbody>
       </table>
-    </main>
-  <% } } catch { %>
+    </main> 
+  <% } else { %>
     <br>
-    <center><h5 style = "margin: 15%">You need to <a href = "http://localhost:8080/register">create an account</a> or <a href = "http://localhost:8080/login">log in</a> to view URLs.</h5></center>
-  <% } %>
+    <center><h5 style = "margin: 15%">You haven't created any TinyURLs. <a href = "http://localhost:8080/urls/new">Create one now</a>.</h5></center>
+    <% } } } catch { %>
+      <br>
+      <center><h5 style = "margin: 15%">You need to <a href = "http://localhost:8080/register">create an account</a> or <a href = "http://localhost:8080/login">log in</a> to view URLs.</h5></center>
+    <% }  %>
 
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
