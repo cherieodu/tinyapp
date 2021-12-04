@@ -54,21 +54,21 @@
                 <div class="box-in">
                   <div class="center">
                     <h4>TinyURL for: <a href="<%= longURL %>"><%= longURL %></a></h4>
-                    <h6>Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a></h6>
+                    <h5>Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a></h5>
                     <br>
-                    <center>
-                      <div style ='background-color: #28a745; color: white; border-radius: 10px; width: 200px'>
-                        Total Visit Count = <%= visitCount %><br />Unique URL Visitors = <%= uniqueVisitCount %>
-                      </div>
-                    </center>
-                    <br>
-                    <br>
-                    <h5>Edit</h5>
                     <form class="form-inline" method="POST" action="/urls/<%=shortURL%>">
-                      <label for="longURL">Enter a new URL:</label>
+                      <label for="longURL">Edit the URL:</label>
                       <input class="form-control" type = "url" name = "longURL" placeholder="http://" style="width: 300px; margin-left: 1em">
                       <button type="submit" class="btn btn-primary" style="margin-left: 1em">Update</button>
                     </form>
+                    <br>
+                    <br>
+                    <br>
+                    <center>
+                      <div style ='color:#28a745; width: 400px'>
+                        Total TinyURL Visits = <%= visitCount %><br />Total Worldwide TinyURLs Created for this URL = <%= uniqueVisitCount %>
+                      </div>
+                    </center>
                   </div>
                 </div>
               </div>
