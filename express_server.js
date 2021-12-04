@@ -1,5 +1,4 @@
 //Requires /Sets /Uses
-
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const bodyParser = require("body-parser");
@@ -19,19 +18,21 @@ app.use(cookieSession({
 }));
 
 
+
+
+
 //Databases
 const urlDatabase = {};
-
 const users = {};
-
 const visitCountTracker = {};
-
 const uniqueVisitTracker = {};
+
+
 
 
 //Gets
 app.get("/", (req, res) => {
-  res.redirect('/urls')
+  res.redirect('/urls');
 });
 
 app.get("/urls.json", (req, res) => {
@@ -43,11 +44,20 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
+  let hasUrls = false;
   let templateVars = {
-    urls: urlDatabase
+    urls: urlDatabase,
+    hasUrls,
   };
 
   templateVars = addUserToTemplateVars(templateVars, req);
+  
+
+  for (let item in urlDatabase) {
+    if (urlDatabase[item]['userID'] === req.session.user_id) {
+      templateVars.hasUrls = true;
+    }
+  }
   res.render("urls_index", templateVars);
 });
 
@@ -61,11 +71,7 @@ app.get("/urls/new", (req, res) => {
     templateVars = addUserToTemplateVars(templateVars, req);
     res.render("urls_new", templateVars);
     return;
-  }
-
-  res.redirect('/login');
-
-  
+  } res.redirect('/login');
 });
 
 app.get("/urls/:shortURL", (req, res) => {
@@ -75,7 +81,7 @@ app.get("/urls/:shortURL", (req, res) => {
   
 
   templateVars = addUserToTemplateVars(templateVars, req);
-  urlsArray = urlsForUser(req.session.user_id);
+  const urlsArray = urlsForUser(req.session.user_id);
   templateVars.urls = urlsArray;
 
   visitCountTracker[shortURL] === undefined ? templateVars.visitCount = 0 : templateVars.visitCount = visitCountTracker[shortURL];
@@ -90,7 +96,7 @@ app.get("/u/:shortURL", (req, res) => {
   }
   const longURL = urlDatabase[shortUrl]['longURL'];
 
-  visitCountTracker[shortUrl] ? visitCountTracker[shortUrl] += 1 : visitCountTracker[shortUrl] = 1;  
+  visitCountTracker[shortUrl] ? visitCountTracker[shortUrl] += 1 : visitCountTracker[shortUrl] = 1;
   res.redirect(longURL);
 });
 
@@ -103,8 +109,9 @@ app.get("/login", (req, res) => {
 });
 
 
-//Posts
 
+
+//Posts
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   const longURL = req.body["longURL"];
@@ -117,8 +124,7 @@ app.post("/urls", (req, res) => {
   } else {
     uniqueVisitTracker[longURL] = [];
     uniqueVisitTracker[longURL].push(req.session.user_id);
-  }
-  res.redirect(`/urls/:${shortURL}`);
+  } res.redirect(`/urls/:${shortURL}`);
 });
 
 app.post("/urls/:id", (req, res) => {
@@ -131,8 +137,7 @@ app.post("/urls/:id", (req, res) => {
   
   if (urls.includes(shortUrl) === true) {
     urlDatabase[shortUrl] = {longURL: req.body["longURL"], userID: req.session.user_id};
-  }
-  res.redirect('/urls');
+  } res.redirect('/urls');
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
@@ -141,9 +146,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
   if (urls.includes(shorturl) === true) {
     delete urlDatabase[req.params.shortURL];
-  }
-  
-  res.redirect('/urls');
+  } res.redirect('/urls');
 });
 
 app.post("/login", (req, res) => {
@@ -156,8 +159,7 @@ app.post("/login", (req, res) => {
     req.session.user_id = user['id'];
     res.redirect('/urls');
     return;
-  }
-  res.status(403).send("Invalid login credentials.");
+  } res.status(403).send("Invalid login credentials.");
   return;
 });
 
@@ -181,7 +183,7 @@ app.post("/register", (req, res) => {
       password
     };
   
-    let ID = user.id;
+    const ID = user.id;
     users[ID] = user;
     req.session.user_id = ID;
     res.redirect('/urls');
@@ -194,6 +196,9 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
+
+
+
 //Functions
 const generateRandomString = () => {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -201,9 +206,7 @@ const generateRandomString = () => {
 
   while (string.length < 6) {
     string += chars[Math.floor(Math.random() * chars.length)];
-  }
-
-  return string;
+  } return string;
 };
 
 const addUserToTemplateVars = (template, req) => {
